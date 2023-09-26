@@ -1,15 +1,19 @@
 <template>
   <div id="app">
     <todoInput @addTask="addTaskToList"></todoInput>
-    <todoList :todoList="undoList" @deleteTodo="deleteTodo"></todoList>
+    <todoList
+      v-show="undoList.length !== 0"
+      :todoList="undoList"
+      @deleteTodo="handleDelete"
+    ></todoList>
     <completeHeader
       :isShowCompleted="isShowCompleted"
       @changeShowCompleted="changeShowCompleted"
     ></completeHeader>
     <todoList
-      :todoList="completedList"
       v-show="isShowCompleted"
-      @deleteTodo="deleteTodo"
+      :todoList="completedList"
+      @deleteTodo="handleDelete"
     ></todoList>
   </div>
 </template>
@@ -28,13 +32,10 @@ export default {
       isShowCompleted: true,
     };
   },
-  computed: {
-    completedList() {
-      return this.todoList.filter((item) => item.isCompleted);
-    },
-    undoList() {
-      return this.todoList.filter((item) => !item.isCompleted);
-    },
+  components: {
+    todoInput,
+    todoList,
+    completeHeader,
   },
   methods: {
     addTaskToList(taskName) {
@@ -44,17 +45,20 @@ export default {
         isCompleted: false,
       });
     },
-    changeShowCompleted(value) {
-      this.isShowCompleted = value;
+    changeShowCompleted(isShowCompleted) {
+      this.isShowCompleted = isShowCompleted;
     },
-    deleteTodo(id) {
+    handleDelete(id) {
       this.todoList = this.todoList.filter((item) => item.id !== id);
     },
   },
-  components: {
-    todoInput,
-    todoList,
-    completeHeader,
+  computed: {
+    undoList() {
+      return this.todoList.filter((item) => !item.isCompleted);
+    },
+    completedList() {
+      return this.todoList.filter((item) => item.isCompleted);
+    },
   },
   watch: {
     todoList: {
@@ -72,7 +76,20 @@ export default {
 </script>
 
 <style>
-* {
+body {
+  max-width: 540px;
+  min-width: 320px;
+  margin: 0 auto;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 40px;
+  padding: 0 8px;
+}
+li {
   list-style: none;
 }
 </style>

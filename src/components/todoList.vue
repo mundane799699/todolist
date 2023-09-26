@@ -1,27 +1,31 @@
 <template>
   <ul class="todo-main">
-    <li v-for="item in todoList" :key="item.id">
+    <li v-for="(item, index) in todoList" :key="item.id">
       <el-checkbox
         v-model="item.isCompleted"
-        @change="checkedChange(item)"
+        @change="handleChange(item)"
       ></el-checkbox>
       <div class="input-container">
         <el-input
           v-model="item.task"
           placeholder="请输入任务名称"
           @blur="toLook(item)"
-          @keyup.native.enter="item.editable = false"
+          @keyup.native.enter="toLook(item)"
           v-if="item.editable"
-          :ref="item.id"
+          :ref="index"
         ></el-input>
         <span
-          :class="item.isCompleted ? 'delete' : ''"
           v-else
-          @click="toEdit(item)"
+          @click="toEdit(item, index)"
+          :class="item.isCompleted ? 'completed' : ''"
           >{{ item.task }}</span
         >
       </div>
-      <el-button class="button" type="danger" @click="handleDelete(item.id)"
+      <el-button
+        v-if="!item.editable"
+        type="danger"
+        class="button"
+        @click="handleDelete(item.id)"
         >删除</el-button
       >
     </li>
@@ -36,21 +40,29 @@ export default {
     handleDelete(id) {
       this.$emit("deleteTodo", id);
     },
-    toEdit(item) {
-      this.$set(item, "editable", true);
+    toEdit(item, index) {
+      if (item.hasOwnProperty("editable")) {
+        item.editable = true;
+      } else {
+        // 这里用$set是因为用普通方式增加的editable属性值不是响应式的
+        this.$set(item, "editable", true);
+      }
+      // $nextTick是当dom渲染完后才会执行
       this.$nextTick(() => {
-        console.log(this.$refs);
-        console.log(this.$refs[item.id]);
-        this.$refs[item.id][0].focus();
+        this.$refs[index][0].focus();
       });
     },
     toLook(item) {
-      item.editable = false;
+      if (item.hasOwnProperty("editable")) {
+        item.editable = false;
+      } else {
+        this.$set(item, "editable", false);
+      }
     },
-    checkedChange(item) {
+    handleChange(item) {
       if (item.isCompleted) {
         this.$message({
-          message: `恭喜你，完成了${item.task}`,
+          message: `恭喜您完成了${item.task}`,
           type: "success",
           duration: 2000,
         });
@@ -62,36 +74,36 @@ export default {
 
 <style scoped>
 .todo-main {
-  width: 500px;
-  margin: 0 auto;
-  border: 1px solid #ddd;
-  border-radius: 2px;
   padding: 0px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+ul {
+  margin: 10px 0 0 0;
 }
 
 li {
   height: 38px;
-  line-height: 38px;
-  padding: 10px 10px;
-  border-bottom: 1px solid #ddd;
   display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
 }
-
+li:nth-last-child(1) {
+  border-bottom: none;
+}
 li .input-container {
-  flex-grow: 1;
+  flex: 1;
   margin-left: 5px;
 }
-
-.delete {
+.completed {
   text-decoration: line-through;
   color: #d9d9d9;
 }
-
 li .button {
-  float: right;
   display: none;
 }
-
 li:hover .button {
   display: block;
 }
@@ -99,13 +111,16 @@ li:hover .button {
 <style>
 .el-checkbox__input.is-checked .el-checkbox__inner,
 .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-  border-color: #d9d9d9 !important;
-  background-color: #d9d9d9 !important;
-}
-.el-checkbox__input.is-focus .el-checkbox__inner {
-  border-color: #d9d9d9 !important;
+  background-color: #d9d9d9;
+  border-color: #d9d9d9;
 }
 .el-checkbox__input.is-checked + .el-checkbox__label {
-  color: #d9d9d9 !important;
+  color: #d9d9d9;
+}
+.el-checkbox.is-bordered.is-checked {
+  border-color: #d9d9d9;
+}
+.el-checkbox__input.is-focus .el-checkbox__inner {
+  border-color: #d9d9d9;
 }
 </style>

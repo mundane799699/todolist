@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <el-input
       placeholder="请输入任务名称，按下回车即可创建"
       v-model="taskName"
@@ -22,9 +22,9 @@ export default {
     add() {
       if (!this.taskName.trim()) {
         return this.$message({
-          type: "error",
           message: "输入不能为空",
-          duration: 1000,
+          type: "error",
+          duration: 2000,
         });
       }
       this.$emit("addTask", this.taskName);
@@ -34,9 +34,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.container {
-  width: 500px;
-  margin: 20px auto 10px;
-}
-</style>
+<style scoped></style>
