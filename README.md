@@ -135,8 +135,6 @@ v-else
 
 增加样式，给已完成的添加删除线
 
-
-
 修改el-checkbox的颜色
 
 https://blog.csdn.net/lanmengyingfei/article/details/117443538
@@ -154,8 +152,6 @@ hover时显示
 ### 修改功能
 
 #### 在input-container中新增一个el-input
-
-#### 将span变成块级元素
 
 #### 给span增加点击事件，切换成编辑模式，并且自动获取焦点
 
